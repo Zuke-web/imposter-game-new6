@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
+    <title>იმპოსტერის თამაში</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --danger: #dc2626;
+            --success: #16a34a;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --input-bg: #f8fafc;
+        }
+
+        [data-theme="retro"] {
+            --bg-color: #050505;
+            --card-bg: #0d1b0e;
+            --primary: #22c55e;
+            --primary-hover: #16a34a;
+            --danger: #ff4444;
+            --success: #00ff66;
+            --text: #22c55e;
+            --text-muted: #15803d;
+            --border-color: #16803d;
+            --input-bg: #020b03;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            transition: background-color 0.25s, color 0.25s, border-color 0.25s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: calc(env(safe-area-inset-top, 0px) + 20px) 16px calc(env(safe-area-inset-bottom, 0px) + 20px) 16px;
+            overflow-y: auto;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            margin: auto 0;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+        .header-controls { display: flex; gap: 8px; }
+
+        .icon-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .icon-btn:hover { border-color: var(--primary); }
+        h1 { font-size: 1.6rem; margin-bottom: 6px; color: var(--text); }
+        h2 { font-size: 1.3rem; margin-bottom: 10px; }
+        p { color: var(--text-muted); margin-bottom: 18px; font-size: 0.9rem; line-height: 1.4; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .input-group { margin-bottom: 14px; text-align: left; }
+        label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); }
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            -webkit-user-select: auto;
+            user-select: auto;
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            padding-right: 40px !important;
+            cursor: pointer;
+        }
+
+        input[type="number"] {
+            padding-right: 45px !important;
+        }
+
+        .time-input-container { display: flex; gap: 8px; }
+        .time-input-container input { flex: 2; }
+        .time-input-container select { flex: 1; }
+
+        .player-inputs { max-height: 160px; overflow-y: auto; margin-bottom: 14px; padding-right: 4px; }
+        .player-input-item { margin-bottom: 8px; }
+
+        button.action-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 8px;
+            touch-action: manipulation;
+        }
+        [data-theme="retro"] button.action-btn { color: #000; }
+        button.action-btn:hover { background-color: var(--primary-hover); }
+
+        .question-box {
+            background-color: var(--input-bg);
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background-color: var(--border-color);
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .timer-display {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 12px 0;
+        }
+
+        .vote-list { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+        .vote-btn {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            text-align: left;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            touch-action: manipulation;
+        }
+        .vote-btn:hover { border-color: var(--primary); }
+        .vote-btn.selected { border-color: var(--primary); background-color: var(--primary); color: white; }
+        [data-theme="retro"] .vote-btn.selected { color: #000; }
+
+        .result-card {
+            background-color: var(--input-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 14px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .scoreboard {
+            background-color: var(--input-bg);
+            border-radius: 12px;
+            padding: 14px;
+            margin: 14px 0;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .scoreboard h3 { font-size: 1rem; margin-bottom: 12px; color: var(--primary); }
+        .team-scores { display: flex; justify-content: space-around; gap: 10px; }
+        .team-box {
+            background-color: var(--card-bg);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            flex: 1;
+        }
+        .team-name { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+        .team-points { font-size: 1.4rem; font-weight: bold; color: var(--text); }
+
+        .toggle-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 8px;
+            margin-top: 8px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .details-box {
+            display: none;
+            background-color: var(--input-bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+            text-align: left;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+        }
+        .details-box.show { display: block; }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div class="container">
+    <div class="header-bar">
+        <span class="header-title">🕵️‍♂️ იმპოსტერი</span>
+        <div class="header-controls">
+            <button class="icon-btn" onclick="toggleMute()" id="mute-btn">🔊 ხმა</button>
+            <button class="icon-btn" onclick="cycleTheme()" id="theme-btn">🎨 Dark</button>
+        </div>
+    </div>
+
+    <div id="setup-screen" class="screen active">
+        <p>შეიყვანეთ მონაცემები და დაიწყეთ თამაში</p>
+
+        <div class="input-group">
+            <label for="game-mode-select">თამაშის რეჟიმი:</label>
+            <select id="game-mode-select">
+                <option value="words" selected>🔤 სიტყვების რეჟიმი</option>
+                <option value="questions">❓ კითხვების რეჟიმი</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="category-select">კატეგორია:</label>
+            <select id="category-select">
+                <option value="all" selected>🎲 ყველა კატეგორია</option>
+                <option value="daily">🏠 ყოველდღიური</option>
+                <option value="travel">✈️ მოგზაურობა & ჰობი</option>
+                <option value="funny">🤪 სასაცილო & უცნაური</option>
+                <option value="movies">🎬 ფილმები & სერიალები</option>
+                <option value="spicy">🔞 Spicy / 18+</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>მსჯელობის დრო (რაუნდზე):</label>
+            <div class="time-input-container">
+                <input type="number" id="timer-value" min="1" value="2">
+                <select id="timer-unit">
+                    <option value="60" selected>წუთი</option>
+                    <option value="1">წამი</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="player-count">მოთამაშეების რაოდენობა:</label>
+            <input type="number" id="player-count" min="3" max="12" value="4" oninput="updatePlayerAndImpostorLimits()">
+        </div>
+
+        <div class="input-group">
+            <label for="impostor-count">იმპოსტერების რაოდენობა:</label>
+            <input type="number" id="impostor-count" min="1" max="2" value="1">
+        </div>
+
+        <div class="input-group">
+            <label>მოთამაშეთა სახელები:</label>
+            <div class="player-inputs" id="player-inputs-container"></div>
+        </div>
+
+        <button class="action-btn" onclick="startGame()">თამაშის დაწყება</button>
+    </div>
+
+    <div id="pass-screen" class="screen">
+        <div class="badge" id="player-progress">მოთამაშე 1 / 4</div>
+        <h2 id="current-player-name">...</h2>
+        <p>გადაეცით ტელეფონი ამ მოთამაშეს.<br>დარწმუნდით, რომ სხვები ეკრანს არ უყურებენ!</p>
+        <button class="action-btn" onclick="showQuestion()">ნახვა</button>
+    </div>
+
+    <div id="reveal-screen" class="screen">
+        <div class="badge" id="reveal-player-name">...</div>
+        <p id="reveal-label">შენი სიტყვაა:</p>
+        <div class="question-box" id="question-text">...</div>
+        <button class="action-btn" onclick="nextPlayer()">დავიმახსოვრე (დაფარვა)</button>
+    </div>
+
+    <div id="discussion-screen" class="screen">
+        <h2 id="discussion-title">🗣️ მსჯელობის დროა!</h2>
+        <p id="discussion-subtext">ისაუბრეთ დარჩენილმა მოთამაშეებმა.</p>
+        <div class="timer-display" id="timer-display">02:00</div>
+        <button class="action-btn" onclick="startVoting()">ხმის მიცემაზე გადასვლა</button>
+    </div>
+
+    <div id="voting-screen" class="screen">
+        <h2>🗳️ ვის აგდებთ?</h2>
+        <p id="voting-instruction">აირჩიეთ ეჭვმიტანილი:</p>
+        <div class="vote-list" id="vote-list"></div>
+        <button class="action-btn" id="submit-vote-btn" onclick="submitVotes()">ხმის მიცემა</button>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <h1 id="result-title">შედეგი</h1>
+        <div class="result-card">
+            <p id="result-desc" style="margin: 0; color: var(--text); font-size: 1rem;"></p>
+        </div>
+
+        <div class="scoreboard">
+            <h3>🏆 გუნდური ქულები</h3>
+            <div class="team-scores">
+                <div class="team-box">
+                    <div class="team-name">👨‍👩‍👧‍👦 მოქალაქეები</div>
+                    <div class="team-points" id="score-citizens">0</div>
+                </div>
+                <div class="team-box">
+                    <div class="team-name">🕵️‍♂️ იმპოსტერები</div>
+                    <div class="team-points" id="score-impostors">0</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="toggle-btn" onclick="toggleDetails()">📜 საიდუმლოს ნახვა</button>
+        
+        <div class="details-box" id="details-box">
+            <p style="margin-bottom: 6px;"><strong>მოქალაქეები:</strong><br><span id="summary-normal"></span></p>
+            <p style="margin: 0;"><strong id="summary-impostor-label">იმპოსტერი:</strong><br><span id="summary-impostor"></span></p>
+        </div>
+
+        <button class="action-btn" onclick="nextRound()" style="margin-top: 12px;">შემდეგი რაუნდი</button>
+        <button onclick="restartGame()" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px; width: 100%; border-radius: 8px; margin-top: 6px; cursor: pointer; touch-action: manipulation;">ახალი თამაში (ქულების განულება)</button>
+    </div>
+</div>
+
+<script>
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+
+    const WORD_PAIRS = {
+        daily: [
+            ["მგელი", "ძაღლი"], ["ყავა", "ჩაი"], ["პიცა", "ხაჭაპური"], ["ტელეფონი", "ტაბლეტი"], ["მზე", "მთვარე"],
+            ["კარაქი", "მარგარინი"], ["შაქარი", "მარილი"], ["პური", "ფუნთუშა"], ["წყალი", "ლიმონათი"], ["ღვინო", "ლუდი"],
+            ["სკამი", "სავარძელი"], ["მაგიდა", "დახლი"], ["კარი", "ფანჯარა"], ["ბალიში", "საბანი"], ["კოვზი", "ჩანგალი"],
+            ["თეფში", "ჯამი"], ["საპონი", "შამპუნი"], ["პირსახოცი", "ხალათი"], ["მაცივარი", "საყინულე"], ["ქურა", "ღუმელი"],
+            ["საათი", "ტაიმერი"], ["წიგნი", "ჟურნალი"], ["კალამი", "ფანქარი"], ["რვეული", "ბლოკნოტი"], ["ჩანთა", "ზურგჩანთა"],
+            ["სარკე", "სურათი"], ["საწოლი", "დივანი"], ["ნათურა", "ჭაღი"], ["ხალიჩა", "ფარდა"], ["ქოლგა", "საწვიმარი"],
+            ["კურტაკი", "პალტო"], ["შარვალი", "ჯინსი"], ["მაისური", "პერანგი"], ["ფეხსაცმელი", "ბოტასი"], ["წინდა", "ჩუსტი"],
+            ["ქუდი", "კეპი"], ["სათვალე", "ლინზები"], ["ბეჭედი", "სამაჯური"], ["საყურე", "ყელსაბამი"], ["საფულე", "ბარათი"],
+            ["გასაღები", "ბოქლომი"], ["მაკრატელი", "დანა"], ["სავარცხელი", "ფენი"], ["კბილის ჯაგრისი", "კბილის პასტა"], ["ტუალეტის ქაღალდი", "ხელსახოცი"],
+            ["ნაგვის ურნა", "ნაგვის პაკეტი"], ["ცოცხი", "მტვერსასრუტი"], ["ღრუბელი", "ტილო"], ["სარეცხი ფხვნილი", "კონდიციონერი"], ["უთო", "შტატივი"],
+            ["ველოსიპედი", "სკუტერი"], ["მანქანა", "ავტობუსი"], ["მეტრო", "ტრამვაი"], ["ტაქსი", "მარშრუტკა"], ["ბენზინი", "დიზელი"],
+            ["რადიო", "დინამიკი"], ["ყურსასმენი", "მიკროფონი"], ["ტელევიზორი", "პროექტორი"], ["კომპიუტერი", "ნოუთბუქი"], ["მაუსი", "კლავიატურა"],
+            ["ვაშლი", "მსხალი"], ["ფორთოხალი", "მანდარინი"], ["ბანანი", "ანანასი"], ["ატამი", "გარგარი"], ["ალუბალი", "ბალი"],
+            ["მარწყვი", "ჟოლო"], ["ყურძენი", "ქლიავი"], ["საზამთრო", "ნესვი"], ["კიტრი", "პომიდორი"], ["ბადრიჯანი", "ყაბაყი"],
+            ["კარტოფილი", "სტაფილო"], ["ხახვი", "ნიორი"], ["წიწაკა", "მწვანილი"], ["ყველი", "ხაჭო"], ["მაწონი", "არაჟანი"]
+        ],
+        travel: [
+            ["ზღვა", "ტბა"], ["თვითმფრინავი", "ვერტმფრენი"], ["მთა", "ბორცვი"], ["პასპორტი", "ვიზა"], ["ოკეანე", "მდინარე"],
+            ["ჩანთა", "ჩემოდანი"], ["სასტუმრო", "ჰოსტელი"], ["კარავი", "კოტეჯი"], ["ბანაკი", "პიკნიკი"], ["რუკა", "კომპასი"],
+            ["პლაჟი", "აუზი"], ["კუნძული", "ნახევარკუნძული"], ["ტყე", "პარკი"], ["ჩანჩქერი", "წყარო"], ["გიდი", "ტურისტი"],
+            ["ბილეთი", "ბარათი"], ["მატარებელი", "ელექტრომატარებელი"], ["გემი", "იახტა"], ["ნავი", "კატარღა"], ["პორტი", "აეროპორტი"],
+            ["ვაგზალი", "გაჩერება"], ["ექსკურსია", "ლაშქრობა"], ["ზურგჩანთა", "საძილე ტომარა"], ["ფანარი", "სანთებელა"], ["მზის სათვალე", "მზის დამცავი"],
+            ["ფოტოაპარატი", "ვიდეოკამერა"], ["სუვენირი", "საჩუქარი"], ["ქვეყანა", "ქალაქი"], ["სოფელი", "დაბა"], ["მღვიმე", "კანიონი"],
+            ["უდაბნო", "ოაზისი"], ["მყინვარი", "თოვლი"], ["ვულკანი", "კრატერი"], ["ხიდი", "გვირაბი"], ["ციხესიმაგრე", "სასახლე"],
+            ["მუზეუმი", "გალერეა"], ["რესტორანი", "კაფე"], ["ბარი", "პაბი"], ["პარაშუტი", "პარაპლანი"], ["დაივინგი", "სერფინგი"],
+            ["პარიზი", "რომი"], ["ლონდონი", "ბერლინი"], ["ტოკიო", "სეული"], ["ნიუ-იორკი", "ლოს-ანჯელესი"], ["სტამბოლი", "ათენი"],
+            ["ბარსელონა", "მადრიდი"], ["ვენეცია", "ფლორენცია"], ["პრაღა", "ვენა"], ["ამსტერდამი", "ბრიუსელი"], ["დუბაი", "დოჰა"],
+            ["ალპები", "კავკასიონი"], ["ხმელთაშუა ზღვა", "შავი ზღვა"], ["საჰარა", "ამაზონი"], ["დუნაი", "რაინი"], ["ევერესტი", "კაზბეგი"],
+            ["კემპინგი", "ტური"], ["საბაგირო", "ფუნიკულიორი"], ["პორტფელი", "საბუთები"], ["დაზღვევა", "ვალუტა"], ["ევრო", "დოლარი"]
+        ],
+        funny: [
+            ["ხინკალი", "პელმენი"], ["კატა", "ვეფხვი"], ["ბეტმენი", "სპაიდერმენი"], ["ზომბი", "ვამპირი"], ["შაურმა", "ბურგერი"],
+            ["ზარმაცი", "პანდა"], ["მაიმუნი", "შორიანგელოზი"], ["თუთიყუში", "ყვავი"], ["ვირი", "ცხენი"], ["ღორი", "ბეჰემოთი"],
+            ["კლოუნი", "მიმი"], ["უცხოპლანეტელი", "რობოტი"], ["დინოზავრი", "დრაკონი"], ["ჯადოქარი", "ფერია"], ["გობლინი", "ორკი"],
+            ["პოპკორნი", "ჩიფსი"], ["კოკა-კოლა", "პეპსი"], ["შოკოლადი", "კანფეტი"], ["ნახატი", "კარიკატურა"], ["მემე", "სტიკერი"],
+            ["სიზმარი", "კოშმარი"], ["პარიკი", "ნიღაბი"], ["პიჟამა", "კოსტიუმი"], ["საპნის ბუშტი", "ბუშტი"], ["ფოკუსი", "ტრიუკი"],
+            ["ტუალეტი", "აბაზანა"], ["წინდა", "ჩუსტი"], ["სიცილი", "ღიმილი"], ["სიურპრიზი", "შოკი"], ["შპაგატი", "ხტუნვა"],
+            ["ტორტი", "ნამცხვარი"], ["მოყინვა", "დაწვრილება"], ["სლოკინი", "ცემინება"], ["ხხვინვა", "ქოშინი"], ["შური", "ეჭვი"],
+            ["ნიორი", "ხახვი"], ["ლიმონი", "ლაიმი"], ["მანდარინი", "ფორთოხალი"], ["მდოგვი", "პირშუშხა"], ["მაიონეზი", "კეტჩუპი"],
+            ["ბუ", "ღამურა"], ["თაგვი", "ვირთხა"], ["ბაყაყი", "გველი"], ["ზღარბი", "მაჩვი"], ["კენგურუ", "კოალა"],
+            ["სკეიტბორდი", "როლიკები"], ["სასტვენი", "საყვირი"], ["ბუმერანგი", "ფრისბი"], ["ტრამპლინი", "ბატუტი"], ["სლინკი", "იო-იო"],
+            ["შრეკი", "ვირი"], ["მინიონი", "გრუ"], ["სპანჯბობი", "პატრიკი"], ["ტომი", "ჯერი"], ["ნუ პოგოდი", "მგელი"]
+        ],
+        movies: [
+            ["კინოთეატრი", "ტელევიზორი"], ["ჰარი პოტერი", "ბეჭდების მბრძანებელი"], ["ჯოკერი", "ბეტმენი"], ["ტიტანიკი", "პოსეიდონი"],
+            ["სპაიდერმენი", "რკინის კაცი"], ["ტორნადო", "ცუნამი"], ["ავატარი", "მატრიცა"], ["შერლოკ ჰოლმსი", "პუარო"], ["ჯეიმს ბონდი", "ჯონ ვიკი"],
+            ["შრეკი", "მადაგასკარი"], ["მეფე ლომი", "ბამბი"], ["ფილმი", "სერიალი"], ["მსახიობი", "რეჟისორი"], ["სცენარი", "კასტინგი"],
+            ["კომედია", "დრამა"], ["საშინელებათა", "ტრილერი"], ["მულტფილმი", "ანიმე"], ["ოპერა", "ბალეტი"], ["თეატრი", "სცენა"],
+            ["ოსკარი", "გრემი"], ["სუბტიტრი", "დუბლიაჟი"], ["ტრეილერი", "ტიტრები"], ["სუპერგმირი", "ბოროტმოქმედი"], ["შპიონი", "დეტექტივი"],
+            ["გლადიატორი", "ვიკინგი"], ["ნიბელუნგები", "მითოლოგია"], ["ვარსკვლავური ომები", "ვარსკვლავური გზა"], ["ტარზანი", "მოუგლი"], ["ფანტასტიკა", "ფენტეზი"],
+            ["ტერმინატორი", "რობოკოპი"], ["რემბო", "კომანდო"], ["მტაცებელი", "უცხო"], ["ფორსაჟი", "ტაქსი"], ["ნათლია", "ინტერსტელარი"],
+            ["ინცეფშენი", "ტენეტი"], ["თორი", "ლოკი"], ["ჰალკი", "თორი"], ["კაპიტანი ამერიკა", "რკინის კაცი"],
+            ["მულანი", "ალადინი"], ["კონკიას", "ფიფქია"], ["რაპუნცელი", "გაყინული"], ["რატატუი", "ვალ-ი"], ["ზოოტოპია", "მოანა"],
+            ["ნეთფლიქსი", "ჰბო"], ["დისნეი", "მარველი"], ["პარამაუნტი", "უორნერი"], ["სინემა", "IMDb"], ["პოპკორნი", "ნახატები"]
+        ],
+        spicy: [
+            ["პაემანი", "ფლირტი"], ["კოცნა", "ჩახუტება"], ["საიდუმლო", "ჭორი"], ["ვნება", "სიყვარული"],
+            ["ღამე", "სიბნელე"], ["სანთელი", "არომატი"], ["მასაჟი", "სპა"], ["აბრეშუმი", "მაქმანი"], ["ტატუ", "პირსინგი"],
+            ["ზარი", "შეტყობინება"], ["სიურპრიზი", "საჩუქარი"], ["კლუბი", "წვეულება"], ["ცეკვა", "სტრიპტიზი"], ["ღვინო", "შამპანური"],
+            ["საწოლი", "დივანი"], ["სარკე", "კამერა"], ["უცნობი", "ნაცნობი"], ["ტყუილი", "სიმართლე"], ["ფანტაზია", "ოცნება"],
+            ["აკრძალული", "ნებადართული"], ["ცდუნება", "ხიბლი"], ["ალერსი", "კინკლაობა"], ["რომანტიკა", "თავგადასავალი"], ["მზერა", "ჩურჩული"],
+            ["ტუჩები", "თვალები"], ["ხელბორკილი", "ყელსაბამი"], ["სხეული", "სული"], ["ღიმილი", "ჩაკოცნა"], ["ალკოჰოლი", "კოქტეილი"],
+            ["ვნებიანი", "ნაზი"], ["სიბნელე", "შუქი"], ["საიდუმლო", "რომანი"], ["ემოცია", "გრძნობა"], ["პარფიუმი", "სურნელი"],
+            ["ტრიალი", "ცდუნება"], ["შეხება", "მზერა"], ["ალერსი", "კოცნა"], ["სიახლოვე", "ნდობა"], ["ჟინჟილი", "სიცხე"],
+            ["ღამის კლუბი", "ბარი"], ["ჯაკუზი", "საუნა"], ["კოქტეილი", "შოტები"], ["სასტუმრო", "აპარტამენტი"], ["შამპანური", "ლიქიორი"],
+            ["შოკოლადი", "მარწყვი"], ["ნაღები", "კარამელი"], ["ყინული", "ცეცხლი"], ["აბრეშუმი", "ტყავი"], ["ნიღაბი", "ხელთათმანი"]
+        ]
+    };
+
+    const CATEGORIZED_QUESTIONS = {
+        daily: [
+            ["რა არის შენი საყვარელი საჭმელი?", "რა კერძს უკვეთავ ხოლმე რესტორანში ყველაზე ხშირად?"],
+            ["რომელია შენი საყვარელი წელიწადის დრო?", "რომელ სეზონზე გაქვს დაბადების დღე?"],
+            ["როდის იღვიძებ ხოლმე დილით?", "როდის დგები ხოლმე დასვენების დღეებში?"],
+            ["რას სვამ დილით პირველად?", "რა არის შენი საყვარელი ცხელი სასმელი?"]
+        ],
+        travel: [
+            ["რა არის შენი საყვარელი შინაური ცხოველი?", "რომელი ცხოველის ყოლას ისურვებდი სახლში?"],
+            ["რომელ ქვეყანაში ისურვებდი მოგზაურობას?", "რომელ უცხო ქვეყანაში ხარ ნამყოფი?"]
+        ],
+        funny: [
+            ["ცხოველად გადაქცევა რომ შეგეძლოს, რომელი იქნებოდი?", "რომელი ცხოველის ხმა შეგიძლია გააკეთო საუკეთესოდ?"],
+            ["რა არის შენი ყველაზე უცნაური ჩვევა?", "რას აკეთებ ხოლმე როცა მარტო ხარ?"]
+        ],
+        movies: [
+            ["რომელია შენი საყვარელი ფილმი?", "რომელ ფილმს უყურე ბოლოს კინოთეატრში?"],
+            ["რომელი სერიალის ყურება დაიწყე ამ ბოლო დროს?", "რომელ სერიალს უყურებდი მთელი ღამე?"]
+        ],
+        spicy: [
+            ["რა არის შენი ყველაზე უცნაური პაემანი?", "რა მოხდა შენს ყველაზე ცუდ პაემანზე?"],
+            ["როგორია შენი იდეალური პარტნიორი?", "რა თვისებას აქცევ ყურადღებას პირველად?"]
+        ]
+    };
+
+    const themes = [
+        { id: 'dark', label: '🎨 Dark' },
+        { id: 'light', label: '🎨 Light' },
+        { id: 'retro', label: '🎨 Retro' }
+    ];
+    let currentThemeIdx = 0;
+
+    let activePool = [];
+    let isMuted = false;
+    let audioCtx = null;
+
+    let teamScores = { citizens: 0, impostors: 0 };
+
+    let gameState = {
+        players: [],
+        selectedIndices: [],
+        currentIndex: 0,
+        normalContent: "",
+        impostorContent: "",
+        timerDuration: 120,
+        timerInterval: null,
+        gameMode: "words"
+    };
+
+    function cycleTheme() {
+        currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+        const theme = themes[currentThemeIdx];
+        document.body.setAttribute('data-theme', theme.id);
+        document.getElementById('theme-btn').innerText = theme.label;
+    }
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function toggleMute() {
+        initAudio();
+        if (!isMuted) {
+            playSound('mute');
+            isMuted = true;
+            document.getElementById('mute-btn').innerText = '🔇 ხმა';
+        } else {
+            isMuted = false;
+            document.getElementById('mute-btn').innerText = '🔊 ხმა';
+            playSound('unmute');
+        }
+    }
+
+    function playSound(type) {
+        initAudio();
+        if (!audioCtx) return;
+        if (isMuted && type !== 'mute') return;
+
+        try {
+            const now = audioCtx.currentTime;
+
+            if (type === 'tick') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(600, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
+            } else if (type === 'alarm') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'mute') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                osc.start(now); osc.stop(now + 0.15);
+            } else if (type === 'unmute') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(500, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                osc.start(now); osc.stop(now + 0.15);
+            } else if (type === 'win') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554.37, now + 0.1);
+                osc.frequency.setValueAtTime(659.25, now + 0.2);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if (type === 'lose') {
+                const freqs = [220, 185, 146.83];
+                freqs.forEach(freq => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+                });
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => updatePlayerAndImpostorLimits());
+
+    function updatePlayerAndImpostorLimits() {
+        const playerCountInput = document.getElementById('player-count');
+        const impostorCountInput = document.getElementById('impostor-count');
+        let pCount = parseInt(playerCountInput.value) || 3;
+        if (pCount < 3) pCount = 3;
+
+        const maxImpostors = pCount - 1;
+        impostorCountInput.max = maxImpostors;
+        if (parseInt(impostorCountInput.value) > maxImpostors) impostorCountInput.value = maxImpostors;
+
+        generatePlayerInputs();
+    }
+
+    function generatePlayerInputs() {
+        const count = parseInt(document.getElementById('player-count').value) || 4;
+        const container = document.getElementById('player-inputs-container');
+        const existingInputs = Array.from(document.querySelectorAll('.player-name-input')).map(i => i.value);
+
+        container.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const div = document.createElement('div');
+            div.className = 'player-input-item';
+            const val = existingInputs[i] !== undefined ? existingInputs[i] : `მოთამაშე ${i + 1}`;
+            div.innerHTML = `<input type="text" placeholder="შეიყვანეთ სახელი" class="player-name-input" value="${val}">`;
+            container.appendChild(div);
+        }
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    function preparePool() {
+        const selectedCat = document.getElementById('category-select').value;
+        const mode = document.getElementById('game-mode-select').value;
+        const source = mode === 'words' ? WORD_PAIRS : CATEGORIZED_QUESTIONS;
+
+        if (selectedCat === 'all') {
+            activePool = [];
+            for (let cat in source) {
+                activePool.push(...source[cat]);
+            }
+        } else {
+            activePool = [...source[selectedCat]];
+        }
+    }
+
+    function getRandomItem() {
+        if (activePool.length === 0) preparePool();
+        const randomIndex = Math.floor(Math.random() * activePool.length);
+        const selected = activePool[randomIndex];
+        activePool.splice(randomIndex, 1);
+        return selected;
+    }
+
+    function startGame() {
+        initAudio();
+        const inputs = document.querySelectorAll('.player-name-input');
+        const names = Array.from(inputs).map((input, index) => input.value.trim() || `მოთამაშე ${index + 1}`);
+
+        if (names.length < 3) {
+            alert("სათამაშოდ საჭიროა მინიმუმ 3 მოთამაშე!");
+            return;
+        }
+
+        teamScores.citizens = 0;
+        teamScores.impostors = 0;
+        gameState.gameMode = document.getElementById('game-mode-select').value;
+        gameState.players = names.map((name, idx) => ({ id: idx, name, isImpostor: false, isAlive: true }));
+
+        preparePool();
+        startNewRoundLogic();
+    }
+
+    function nextRound() {
+        initAudio();
+        startNewRoundLogic();
+    }
+
+    function startNewRoundLogic() {
+        const impCount = parseInt(document.getElementById('impostor-count').value) || 1;
+        const timeVal = parseInt(document.getElementById('timer-value').value) || 1;
+        const timeUnit = parseInt(document.getElementById('timer-unit').value) || 60;
+        gameState.timerDuration = timeVal * timeUnit;
+
+        let pair = getRandomItem();
+        gameState.normalContent = pair[0];
+        gameState.impostorContent = pair[1];
+
+        gameState.players.forEach(p => {
+            p.isImpostor = false;
+            p.isAlive = true;
+        });
+
+        let assigned = 0;
+        while (assigned < impCount) {
+            const randIdx = Math.floor(Math.random() * gameState.players.length);
+            if (!gameState.players[randIdx].isImpostor) {
+                gameState.players[randIdx].isImpostor = true;
+                assigned++;
+            }
+        }
+
+        gameState.selectedIndices = [];
+        gameState.currentIndex = 0;
+
+        setupPassScreen();
+    }
+
+    function setupPassScreen() {
+        const total = gameState.players.length;
+        const current = gameState.currentIndex;
+        document.getElementById('player-progress').innerText = `მოთამაშე ${current + 1} / ${total}`;
+        document.getElementById('current-player-name').innerText = gameState.players[current].name;
+        showScreen('pass-screen');
+    }
+
+    function showQuestion() {
+        initAudio();
+        const current = gameState.currentIndex;
+        const player = gameState.players[current];
+        document.getElementById('reveal-player-name').innerText = player.name;
+        document.getElementById('reveal-label').innerText = gameState.gameMode === 'words' ? "შენი სიტყვაა:" : "შენი კითხვაა:";
+        document.getElementById('question-text').innerText = player.isImpostor ? gameState.impostorContent : gameState.normalContent;
+        showScreen('reveal-screen');
+    }
+
+    function nextPlayer() {
+        initAudio();
+        gameState.currentIndex++;
+        if (gameState.currentIndex < gameState.players.length) {
+            setupPassScreen();
+        } else {
+            startDiscussion();
+        }
+    }
+
+    function startDiscussion() {
+        showScreen('discussion-screen');
+        let timeLeft = gameState.timerDuration;
+
+        const updateDisplay = () => {
+            const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+            const secs = String(timeLeft % 60).padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+        };
+
+        updateDisplay();
+        clearInterval(gameState.timerInterval);
+
+        gameState.timerInterval = setInterval(() => {
+            timeLeft--;
+            updateDisplay();
+
+            if (timeLeft <= 5 && timeLeft > 0) playSound('tick');
+
+            if (timeLeft <= 0) {
+                clearInterval(gameState.timerInterval);
+                playSound('alarm');
+                startVoting();
+            }
+        }, 1000);
+    }
+
+    function startVoting() {
+        initAudio();
+        clearInterval(gameState.timerInterval);
+        gameState.selectedIndices = [];
+
+        const container = document.getElementById('vote-list');
+        container.innerHTML = '';
+
+        const instr = document.getElementById('voting-instruction');
+        const submitBtn = document.getElementById('submit-vote-btn');
+
+        if (gameState.gameMode === 'questions') {
+            instr.innerText = "მონიშნეთ რამდენიმე ეჭვმიტანილი (ერთდროულად):";
+            submitBtn.innerText = "შედეგის ნახვა";
+        } else {
+            instr.innerText = "აირჩიეთ 1 ეჭვმიტანილი გასაგდებად:";
+            submitBtn.innerText = "გაგდება";
+        }
+
+        gameState.players.forEach(player => {
+            if (player.isAlive) {
+                const btn = document.createElement('button');
+                btn.className = 'vote-btn';
+                btn.innerHTML = `<span>👈 ${player.name}</span> <span class="check-icon"></span>`;
+                btn.onclick = () => togglePlayerSelection(player.id, btn);
+                container.appendChild(btn);
+            }
+        });
+
+        showScreen('voting-screen');
+    }
+
+    function togglePlayerSelection(id, btnElement) {
+        initAudio();
+        playSound('tick');
+        if (gameState.gameMode === 'words') {
+            document.querySelectorAll('.vote-btn').forEach(b => {
+                b.classList.remove('selected');
+                b.querySelector('.check-icon').innerText = '';
+            });
+            gameState.selectedIndices = [id];
+            btnElement.classList.add('selected');
+            btnElement.querySelector('.check-icon').innerText = '✔️';
+        } else {
+            const pos = gameState.selectedIndices.indexOf(id);
+            if (pos > -1) {
+                gameState.selectedIndices.splice(pos, 1);
+                btnElement.classList.remove('selected');
+                btnElement.querySelector('.check-icon').innerText = '';
+            } else {
+                gameState.selectedIndices.push(id);
+                btnElement.classList.add('selected');
+                btnElement.querySelector('.check-icon').innerText = '✔️';
+            }
+        }
+    }
+
+    function submitVotes() {
+        initAudio();
+        if (gameState.selectedIndices.length === 0) {
+            alert("გთხოვთ მონიშნოთ მინიმუმ 1 ეჭვმიტანილი!");
+            return;
+        }
+
+        if (gameState.gameMode === 'questions') {
+            const impostorIds = gameState.players.filter(p => p.isImpostor).map(p => p.id);
+            const selected = gameState.selectedIndices;
+
+            const caughtAllImpostors = impostorIds.every(id => selected.includes(id));
+            const noCitizensCaught = selected.every(id => impostorIds.includes(id));
+
+            const citizensWon = caughtAllImpostors && noCitizensCaught;
+            finishRound(citizensWon);
+        } else {
+            const votedId = gameState.selectedIndices[0];
+            const votedPlayer = gameState.players.find(p => p.id === votedId);
+            votedPlayer.isAlive = false;
+
+            const alivePlayers = gameState.players.filter(p => p.isAlive);
+            const aliveImpostors = alivePlayers.filter(p => p.isImpostor);
+            const aliveCitizens = alivePlayers.filter(p => !p.isImpostor);
+
+            if (aliveImpostors.length === 0) {
+                finishRound(true);
+            } else if (aliveImpostors.length >= aliveCitizens.length) {
+                finishRound(false);
+            } else {
+                alert(`📌 ${votedPlayer.name} გაგდებულია! თამაში გრძელდება...`);
+                startDiscussion();
+            }
+        }
+    }
+
+    function finishRound(citizensWon) {
+        const title = document.getElementById('result-title');
+        const desc = document.getElementById('result-desc');
+
+        const impostors = gameState.players.filter(p => p.isImpostor);
+        const impostorsList = impostors.map(p => p.name).join(', ');
+        const citizensList = gameState.players.filter(p => !p.isImpostor).map(p => p.name).join(', ');
+
+        const isMultiple = impostors.length > 1;
+        const impostorTextLabel = isMultiple ? "იმპოსტერები იყვნენ:" : "იმპოსტერი იყო:";
+
+        if (citizensWon) {
+            playSound('win');
+            teamScores.citizens += 1;
+            title.innerText = "🎉 მოქალაქეებმა გაიმარჯვეს!";
+            title.style.color = "var(--success)";
+            desc.innerText = `ყველა იმპოსტერი გამოვლენილია!\n\n${impostorTextLabel} ${impostorsList}`;
+        } else {
+            playSound('lose');
+            teamScores.impostors += 1;
+            title.innerText = "💥 იმპოსტერებმა გაიმარჯვეს!";
+            title.style.color = "var(--danger)";
+            desc.innerText = `იმპოსტერებმა გადარჩენა შეძლეს!\n\n${impostorTextLabel} ${impostorsList}`;
+        }
+
+        updateScoreboard();
+
+        document.getElementById('summary-normal').innerText = `${gameState.normalContent} (${citizensList})`;
+        document.getElementById('summary-impostor-label').innerText = isMultiple ? "იმპოსტერები:" : "იმპოსტერი:";
+        document.getElementById('summary-impostor').innerText = `${gameState.impostorContent} (${impostorsList})`;
+        document.getElementById('details-box').classList.remove('show');
+
+        showScreen('result-screen');
+    }
+
+    function updateScoreboard() {
+        document.getElementById('score-citizens').innerText = teamScores.citizens;
+        document.getElementById('score-impostors').innerText = teamScores.impostors;
+    }
+
+    function toggleDetails() {
+        initAudio();
+        document.getElementById('details-box').classList.toggle('show');
+    }
+
+    function restartGame() {
+        initAudio();
+        teamScores.citizens = 0;
+        teamScores.impostors = 0;
+        showScreen('setup-screen');
+    }
+</script>
+
+</body>
+</html>
