@@ -1347,15 +1347,22 @@
     function preparePool() {
         const selectedCat = document.getElementById('category-select').value;
         const mode = document.getElementById('game-mode-select').value;
-        const source = mode === 'words' ? WORD_PAIRS['ka'] : CATEGORIZED_QUESTIONS['ka'];
+        const source = mode === 'words' ? WORD_PAIRS[currentLang] : CATEGORIZED_QUESTIONS[currentLang];
 
         activePool = [];
 
+        if (!source) {
+            console.error('No game data for language:', currentLang);
+            return;
+        }
+
         if (selectedCat === 'all') {
             for (const cat in source) {
-                source[cat].forEach((_, idx) => activePool.push({ cat, idx }));
+                if (Array.isArray(source[cat])) {
+                    source[cat].forEach((_, idx) => activePool.push({ cat, idx }));
+                }
             }
-        } else if (source[selectedCat]) {
+        } else if (Array.isArray(source[selectedCat])) {
             source[selectedCat].forEach((_, idx) => activePool.push({ cat: selectedCat, idx }));
         }
 
