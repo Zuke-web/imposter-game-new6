@@ -403,7 +403,7 @@
 
         <div class="input-group">
             <label for="player-count">მოთამაშეების რაოდენობა:</label>
-            <input type="number" id="player-count" min="3" max="12" value="4" oninput="updatePlayerAndImpostorLimits()">
+            <input type="number" id="player-count" min="3" value="4" oninput="updatePlayerAndImpostorLimits()">
         </div>
 
         <div class="input-group">
@@ -1289,9 +1289,14 @@
         } else {
             playSound('lose');
             teamScores.impostors += 1;
-            title.innerText = "💥 იმპოსტერებმა გაიმარჯვეს!";
+            
+            // დინამიკური ტექსტი იმპოსტერების რაოდენობის მიხედვით
+            const impWinTitle = isMultiple ? "💥 იმპოსტერებმა გაიმარჯვეს!" : "💥 იმპოსტერმა გაიმარჯვა!";
+            const impWinSubtext = isMultiple ? "იმპოსტერებმა გადარჩენა შეძლეს!" : "იმპოსტერმა გადარჩენა შეძლო!";
+
+            title.innerText = impWinTitle;
             title.style.color = "var(--danger)";
-            desc.innerText = `იმპოსტერებმა გადარჩენა შეძლეს!\n\n${impostorTextLabel} ${impostorsList}`;
+            desc.innerText = `${impWinSubtext}\n\n${impostorTextLabel} ${impostorsList}`;
         }
 
         updateScoreboard();
