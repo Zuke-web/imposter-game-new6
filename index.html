@@ -74,7 +74,7 @@
         .container {
             background-color: var(--card-bg);
             border-radius: 16px;
-            padding: 24px;
+            padding: 24px 16px;
             width: 100%;
             max-width: 460px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
@@ -87,26 +87,39 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
             margin-bottom: 16px;
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .header-title { font-size: 1.2rem; font-weight: 700; color: var(--text); }
-        .header-controls { display: flex; gap: 6px; }
+        .header-title { 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            color: var(--text);
+            white-space: nowrap;
+        }
+        
+        .header-controls { 
+            display: flex; 
+            gap: 4px; 
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
 
         .icon-btn {
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             color: var(--text);
-            padding: 6px 10px;
+            padding: 5px 8px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             white-space: nowrap;
         }
 
