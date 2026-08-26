@@ -290,7 +290,6 @@
         }
         .details-box.show { display: block; }
 
-        /* Modal / Pop-up Styles for Rules */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -433,10 +432,14 @@
         <button class="action-btn" onclick="nextPlayer()">დავიმახსოვრე (დაფარვა)</button>
     </div>
 
+    <!-- განახლებული საჯარო კითხვის ეკრანი -->
     <div id="public-question-screen" class="screen">
         <h2>📢 ყურადღება ყველას!</h2>
-        <div class="question-box" id="public-question-text">...</div>
-        <button class="action-btn" onclick="startDiscussion()">მსჯელობის დაწყება</button>
+        <p id="public-screen-desc">ყველა მოთამაშემ ნახა თავისი კითხვა.</p>
+        <div class="question-box" id="public-question-text" style="display: none;">...</div>
+        <button class="action-btn" id="btn-show-public-q" onclick="revealPublicQuestion()">მთავარი კითხვის ნახვა</button>
+        <button class="action-btn" id="btn-hide-public-q" onclick="hidePublicQuestion()" style="display: none; background-color: var(--danger);">კითხვის დამალვა</button>
+        <button class="action-btn" id="btn-start-disc" onclick="startDiscussion()" style="display: none;">მსჯელობის დაწყება</button>
     </div>
 
     <div id="discussion-screen" class="screen">
@@ -485,7 +488,6 @@
     </div>
 </div>
 
-<!-- Modal / Pop-up Windows for Rules -->
 <div id="rules-modal" class="modal-overlay" onclick="closeRulesModal(event)">
     <div class="modal-content">
         <div class="modal-header">
@@ -748,7 +750,7 @@
             ["როგორ იქცევი, როცა მარტო ხარ ლიფტში?", "ცეკვავ თუ იღებ ფოტოებს ლიფტში?"],
             ["რა არის შენი საყვარელი სასაცილო შეძახილი?", "რას ყვირი ხოლმე სიხარულისგან?"],
             ["რომელ სათამაშოსთან ითამაშებდი ახლაც?", "რა ბავშვობის სათამაშო გენატრება?"],
-            ["რა არის შენი საბოლოო სიტყვა ამ რაუნდში?", "რა სასაცილო ფრაზით დაასრულებდი?"],
+            ["რა არის შენი საბოლოო სიტყვა ამ რაუნდში?", "რა სასაცილო ფრაზით დაასრულებდი?"]
         ],
         movies: [
             ["რომელია შენი საყვარელი ფილმი?", "რომელ სერიალს უყურებ ახლა?"],
@@ -1144,12 +1146,37 @@
         }
     }
 
+    /* ახალი ლოგიკა საჯარო კითხვის ეკრანისთვის */
     function showPublicQuestionScreen() {
+        document.getElementById('public-screen-desc').innerText = "ყველა მოთამაშემ ნახა თავისი კითხვა.";
         document.getElementById('public-question-text').innerText = gameState.normalContent;
+        document.getElementById('public-question-text').style.display = 'none';
+
+        document.getElementById('btn-show-public-q').style.display = 'block';
+        document.getElementById('btn-hide-public-q').style.display = 'none';
+        document.getElementById('btn-start-disc').style.display = 'none';
+
         showScreen('public-question-screen');
     }
 
+    function revealPublicQuestion() {
+        initAudio();
+        document.getElementById('public-screen-desc').innerText = "მთავარი კითხვა:";
+        document.getElementById('public-question-text').style.display = 'flex';
+        document.getElementById('btn-show-public-q').style.display = 'none';
+        document.getElementById('btn-hide-public-q').style.display = 'block';
+    }
+
+    function hidePublicQuestion() {
+        initAudio();
+        document.getElementById('public-screen-desc').innerText = "კითხვა დამალულია. მზად ხართ მსჯელობისთვის?";
+        document.getElementById('public-question-text').style.display = 'none';
+        document.getElementById('btn-hide-public-q').style.display = 'none';
+        document.getElementById('btn-start-disc').style.display = 'block';
+    }
+
     function startDiscussion() {
+        initAudio();
         showScreen('discussion-screen');
         let timeLeft = gameState.timerDuration;
 
@@ -1290,7 +1317,6 @@
             playSound('lose');
             teamScores.impostors += 1;
             
-            // დინამიკური ტექსტი იმპოსტერების რაოდენობის მიხედვით
             const impWinTitle = isMultiple ? "💥 იმპოსტერებმა გაიმარჯვეს!" : "💥 იმპოსტერმა გაიმარჯვა!";
             const impWinSubtext = isMultiple ? "იმპოსტერებმა გადარჩენა შეძლეს!" : "იმპოსტერმა გადარჩენა შეძლო!";
 
